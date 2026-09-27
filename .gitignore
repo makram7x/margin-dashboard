@@ -3,5 +3,5 @@ node_modules/
 next-env.d.ts
 *.tsbuildinfo
 # Local persisted state (created on first run, seeded from sample-data/)
-data/
+/data/
 .DS_Store
