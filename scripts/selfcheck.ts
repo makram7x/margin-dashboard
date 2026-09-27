@@ -16,6 +16,7 @@ const model = buildCostModel(state);
 
 const aed = (n: number) => n.toLocaleString("en", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const pad = (s: string, n: number) => s.padStart(n);
+const zero = (n: number) => (Math.abs(n) < 5e-7 ? 0 : n); // avoid printing "-0.000000"
 
 console.log(`Source: ${useStore ? "data/store.json" : "sample-data/*.xlsx"} · overhead forced to 0`);
 console.log(`Billable categories: ${state.settings.billableCategories.join(", ")}\n`);
@@ -36,7 +37,7 @@ for (const m of model.months) {
       pad(m.indirectRate === null ? "—" : m.indirectRate.toFixed(2), 13),
       pad(aed(m.allocatedCost), 13),
       pad(aed(m.unallocatedCost), 13),
-      pad(diff.toFixed(4), 13),
+      pad(zero(diff).toFixed(4), 13),
     ].join(""),
   );
 }
@@ -51,7 +52,7 @@ for (const year of model.years) {
   console.log(`  Cost            ${pad(aed(t.cost), 16)}`);
   console.log(`  Revenue         ${pad(aed(t.revenue), 16)}`);
   console.log(`  Margin          ${pad(aed(t.profit), 16)}  (${((t.margin ?? 0) * 100).toFixed(1)}%)`);
-  console.log(`  Cost − salaries ${pad(diff.toFixed(6), 16)}  ${Math.abs(diff) < 0.005 ? "✓ reconciles" : "✗ DOES NOT RECONCILE"}`);
+  console.log(`  Cost − salaries ${pad(zero(diff).toFixed(6), 16)}  ${Math.abs(diff) < 0.005 ? "✓ reconciles" : "✗ DOES NOT RECONCILE"}`);
   if (Math.abs(diff) >= 0.005) failed = true;
 }
 
