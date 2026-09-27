@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { employeeKey, isEmptyCell, normCategory, toNumber } from "@/lib/ingest/cells";
 import { findYear, parseMonth } from "@/lib/ingest/dates";
+import { projectDisplayName } from "@/lib/format";
 
 describe("parseMonth", () => {
   it.each([
@@ -53,6 +54,11 @@ describe("cells", () => {
   it("joins employee numbers with or without leading zeros", () => {
     expect(employeeKey("00101", "Hana Yousef")).toBe(employeeKey("101", "Hana"));
     expect(employeeKey(null, "Kevin  D'Souza")).toBe(employeeKey(null, "kevin dsouza"));
+  });
+
+  it("turns proposal filenames into readable project names", () => {
+    expect(projectDisplayName("Meridian-Website-UIUXdesign-Development-14012025-COMMERCIAL.pdf")).toBe("Meridian Website UI/UX design Development");
+    expect(projectDisplayName("Alwasl-Annual-Hosting-2025")).toBe("Alwasl Annual Hosting 2025");
   });
 
   it("finds a year in titles and filenames", () => {

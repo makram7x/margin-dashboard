@@ -58,14 +58,27 @@ export default async function ProjectPage({ params }: { params: Promise<{ ref: s
         </div>
         {consumed !== null && (
           <div style={{ padding: "0 18px 16px" }}>
-            <div className="sharebar" role="img" aria-label={`Cost is ${pct(consumed)} of price`}>
-              <span style={{ width: `${Math.min(1, d.directCost / price!) * 100}%`, background: "var(--series-2)" }} />
-              <span style={{ width: `${Math.max(0, Math.min(1, d.cost / price!) - Math.min(1, d.directCost / price!)) * 100}%`, background: "var(--series-2)", opacity: 0.45 }} />
+            {/* Scaled to the larger of price and cost; when cost overruns, a marker shows where the price sits. */}
+            <div style={{ position: "relative" }}>
+              <div className="sharebar" role="img" aria-label={`Cost is ${pct(consumed)} of price`}>
+                <span style={{ width: `${(d.directCost / Math.max(price!, d.cost)) * 100}%`, background: "var(--series-2)" }} />
+                <span style={{ width: `${(d.indirectCost / Math.max(price!, d.cost)) * 100}%`, background: "var(--series-2)", opacity: 0.45 }} />
+              </div>
+              {consumed > 1 && (
+                <span
+                  title={`Price: ${aed(price)}`}
+                  style={{ position: "absolute", top: -4, bottom: -4, width: 2, borderRadius: 1, background: "var(--ink)", left: `calc(${(1 / consumed) * 100}% - 1px)` }}
+                />
+              )}
             </div>
             <div className="legend" style={{ marginTop: 8 }}>
               <span><i className="swatch" style={{ background: "var(--series-2)" }} /> Direct cost {pct(d.directCost / price!)}</span>
               <span><i className="swatch" style={{ background: "var(--series-2)", opacity: 0.45 }} /> Indirect cost {pct(d.indirectCost / price!)}</span>
-              <span><i className="swatch" style={{ background: "var(--grid)" }} /> {consumed > 1 ? <span className="neg">Over price by {pct(consumed - 1)}</span> : `Margin ${pct(1 - consumed)}`}</span>
+              {consumed > 1 ? (
+                <span><i className="swatch" style={{ background: "var(--ink)", width: 2 }} /> Price · <span className="neg">cost is {pct(consumed - 1)} over</span></span>
+              ) : (
+                <span><i className="swatch" style={{ background: "var(--grid)" }} /> Margin {pct(1 - consumed)}</span>
+              )}
             </div>
           </div>
         )}
