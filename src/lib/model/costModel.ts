@@ -17,6 +17,7 @@
 // price × entry hours ÷ project lifetime hours. This is the brief's "employee revenue share",
 // applied per month, so period views get revenue that matches the work done in the period.
 
+import { projectDisplayName } from "../format";
 import { normCategory, normName } from "../ingest/cells";
 import type { DataState, ProjectPrice, SalaryRecord, Settings, TimesheetEntry, YearMonth } from "../types";
 import { monthKey, monthLabel } from "../types";
@@ -355,7 +356,7 @@ function buildProjects(
   for (const p of prices) {
     projects.set(p.refCode, {
       refCode: p.refCode,
-      name: p.name ?? p.refCode,
+      name: p.name ? projectDisplayName(p.name) : p.refCode,
       company: null,
       category: p.category,
       status: p.status,
@@ -373,7 +374,7 @@ function buildProjects(
     if (!p) {
       p = {
         refCode: ref,
-        name: e.taskName ?? ref,
+        name: e.taskName ? projectDisplayName(e.taskName) : ref,
         company: null,
         category: e.category,
         status: null,
